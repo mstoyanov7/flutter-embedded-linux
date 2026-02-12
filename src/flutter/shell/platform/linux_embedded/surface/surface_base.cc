@@ -66,4 +66,20 @@ bool SurfaceBase::ResourceContextMakeCurrent() const {
   return offscreen_surface_->MakeCurrent();
 };
 
+EGLDisplay SurfaceBase::GetEGLDisplay() const {
+  return context_ ? context_->GetDisplay() : EGL_NO_DISPLAY;
+}
+
+EGLContext SurfaceBase::GetEGLContext() const {
+  return context_ ? context_->GetContext() : EGL_NO_CONTEXT;
+}
+
+EGLContext SurfaceBase::GetEGLResourceContext() const {
+  return context_ ? context_->GetResourceContext() : EGL_NO_CONTEXT;
+}
+
+EGLint SurfaceBase::GetEGLConfigId() const {
+  return context_ ? context_->GetConfigId() : 0;
+}
+
 }  // namespace flutter

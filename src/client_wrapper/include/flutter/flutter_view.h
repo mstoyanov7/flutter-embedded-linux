@@ -27,6 +27,17 @@ class FlutterView {
   // Returns the display frame rate.
   int32_t GetFrameRate() { return FlutterDesktopViewGetFrameRate(view_); }
 
+  // Returns the Wayland display pointer if using Wayland.
+  void* GetWaylandDisplay() { return FlutterDesktopViewGetWaylandDisplay(view_); }
+  // Returns the EGLDisplay for this view.
+  void* GetEGLDisplay() { return FlutterDesktopViewGetEGLDisplay(view_); }
+  // Returns the onscreen EGLContext.
+  void* GetEGLContext() { return FlutterDesktopViewGetEGLContext(view_); }
+  // Returns the resource EGLContext.
+  void* GetEGLResourceContext() { return FlutterDesktopViewGetEGLResourceContext(view_); }
+  // Returns the EGLConfig ID.
+  int32_t GetEGLConfigId() { return FlutterDesktopViewGetEGLConfigId(view_); }
+
  private:
   // Handle for interacting with the C API's view.
   FlutterDesktopViewRef view_ = nullptr;

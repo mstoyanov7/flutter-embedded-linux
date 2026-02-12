@@ -195,6 +195,15 @@ int64_t TextureRegistrarImpl::RegisterTexture(TextureVariant* texture) {
       auto texture = static_cast<EGLImageTexture*>(user_data);
       return texture->GetEGLImage(width, height, egl_display, egl_context);
     };
+  } else if (auto opengl_texture = std::get_if<OpenGLTexture>(texture)) {
+    info.type = kFlutterDesktopOpenGLTexture;
+    info.opengl_config.user_data = opengl_texture;
+    info.opengl_config.callback =
+        [](size_t width, size_t height,
+           void* user_data) -> const FlutterOpenGLTexture* {
+      auto texture = static_cast<OpenGLTexture*>(user_data);
+      return texture->GetOpenGLTexture(width, height);
+    };
   } else {
     std::cerr << "Attempting to register unknown texture variant." << std::endl;
     return -1;

@@ -1297,6 +1297,10 @@ int32_t ELinuxWindowWayland::GetFrameRate() {
   return frame_rate_;
 }
 
+void* ELinuxWindowWayland::GetWaylandDisplay() const {
+  return wl_display_;
+}
+
 bool ELinuxWindowWayland::DispatchEvent() {
   if (!IsValid()) {
     ELINUX_LOG(ERROR) << "Wayland display is invalid.";

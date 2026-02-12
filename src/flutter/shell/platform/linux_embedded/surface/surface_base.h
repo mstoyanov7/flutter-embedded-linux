@@ -41,6 +41,11 @@ class SurfaceBase {
   // Makes an off-screen resource context.
   bool ResourceContextMakeCurrent() const;
 
+  EGLDisplay GetEGLDisplay() const;
+  EGLContext GetEGLContext() const;
+  EGLContext GetEGLResourceContext() const;
+  EGLint GetEGLConfigId() const;
+
  protected:
   std::unique_ptr<ContextEgl> context_;
   NativeWindow* native_window_ = nullptr;

@@ -35,6 +35,11 @@ class ContextEgl {
   void* GlProcResolver(const char* name) const;
 
   EGLint GetAttrib(EGLint attribute);
+  EGLDisplay GetDisplay() const;
+  EGLContext GetContext() const;
+  EGLContext GetResourceContext() const;
+  EGLConfig GetConfig() const;
+  EGLint GetConfigId() const;
 
  protected:
   std::unique_ptr<EnvironmentEgl> environment_;

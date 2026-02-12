@@ -74,6 +74,26 @@ class EGLImageTexture {
   const GetEGLImageCallback get_egl_image_callback_;
 };
 
+// An OpenGL texture.
+class OpenGLTexture {
+ public:
+  // A callback used for retrieving OpenGL textures.
+  typedef std::function<const FlutterOpenGLTexture*(size_t width,
+                                                    size_t height)>
+      GetOpenGLTextureCallback;
+
+  explicit OpenGLTexture(GetOpenGLTextureCallback get_texture_callback)
+      : get_texture_callback_(std::move(get_texture_callback)) {}
+
+  const FlutterOpenGLTexture* GetOpenGLTexture(size_t width,
+                                               size_t height) const {
+    return get_texture_callback_(width, height);
+  }
+
+ private:
+  const GetOpenGLTextureCallback get_texture_callback_;
+};
+
 // A GPU surface-based texture.
 class GpuSurfaceTexture {
  public:
@@ -107,7 +127,10 @@ class GpuSurfaceTexture {
 // The available texture variants.
 // Only PixelBufferTexture is currently implemented.
 // Other variants are expected to be added in the future.
-typedef std::variant<PixelBufferTexture, GpuSurfaceTexture, EGLImageTexture>
+typedef std::variant<PixelBufferTexture,
+                     GpuSurfaceTexture,
+                     EGLImageTexture,
+                     OpenGLTexture>
     TextureVariant;
 
 // An object keeping track of external textures.

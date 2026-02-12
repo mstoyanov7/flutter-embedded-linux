@@ -9,6 +9,7 @@
 
 #ifdef USE_GLES3
 #include <GLES3/gl32.h>
+#include <GLES2/gl2ext.h>
 #else
 #include <GLES2/gl2.h>
 #include <GLES2/gl2ext.h>
@@ -41,6 +42,7 @@ struct GlProcs {
   glTexImage2DProc glTexImage2D;
   glEGLImageTargetTexture2DOESProc glEGLImageTargetTexture2DOES;
   bool valid;
+  bool egl_image_available;
 };
 
 // Abstract external texture.

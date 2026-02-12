@@ -9,6 +9,7 @@
 
 #include "flutter/shell/platform/embedder/embedder_struct_macros.h"
 #include "flutter/shell/platform/linux_embedded/external_texture_egl_image.h"
+#include "flutter/shell/platform/linux_embedded/external_texture_opengl.h"
 #include "flutter/shell/platform/linux_embedded/external_texture_pixelbuffer.h"
 #include "flutter/shell/platform/linux_embedded/flutter_elinux_engine.h"
 #include "flutter/shell/platform/linux_embedded/flutter_elinux_view.h"
@@ -26,11 +27,10 @@ FlutterELinuxTextureRegistrar::FlutterELinuxTextureRegistrar(
 
 int64_t FlutterELinuxTextureRegistrar::RegisterTexture(
     const FlutterDesktopTextureInfo* texture_info) {
-  if (!gl_procs_.valid) {
-    return kInvalidTexture;
-  }
-
   if (texture_info->type == kFlutterDesktopPixelBufferTexture) {
+    if (!gl_procs_.valid) {
+      return kInvalidTexture;
+    }
     if (!texture_info->pixel_buffer_config.callback) {
       std::cerr << "Invalid pixel buffer texture callback." << std::endl;
       return kInvalidTexture;
@@ -40,6 +40,11 @@ int64_t FlutterELinuxTextureRegistrar::RegisterTexture(
         texture_info->pixel_buffer_config.callback,
         texture_info->pixel_buffer_config.user_data, gl_procs_));
   } else if (texture_info->type == kFlutterDesktopEGLImageTexture) {
+    if (!gl_procs_.valid || !gl_procs_.egl_image_available) {
+      std::cerr << "EGLImage textures are not supported by this EGL stack."
+                << std::endl;
+      return kInvalidTexture;
+    }
     if (!texture_info->egl_image_config.callback) {
       std::cerr << "Invalid EGLImage texture callback." << std::endl;
       return kInvalidTexture;
@@ -48,6 +53,15 @@ int64_t FlutterELinuxTextureRegistrar::RegisterTexture(
     return EmplaceTexture(std::make_unique<flutter::ExternalTextureEGLImage>(
         texture_info->egl_image_config.callback,
         texture_info->egl_image_config.user_data, gl_procs_));
+  } else if (texture_info->type == kFlutterDesktopOpenGLTexture) {
+    if (!texture_info->opengl_config.callback) {
+      std::cerr << "Invalid OpenGL texture callback." << std::endl;
+      return kInvalidTexture;
+    }
+
+    return EmplaceTexture(std::make_unique<flutter::ExternalTextureOpenGL>(
+        texture_info->opengl_config.callback,
+        texture_info->opengl_config.user_data));
   } else if (texture_info->type == kFlutterDesktopGpuSurfaceTexture) {
     std::cerr << "GpuSurfaceTexture is not yet supported." << std::endl;
     return kInvalidTexture;
@@ -135,9 +149,10 @@ void FlutterELinuxTextureRegistrar::ResolveGlFunctions(GlProcs& procs) {
   procs.glEGLImageTargetTexture2DOES =
       reinterpret_cast<glEGLImageTargetTexture2DOESProc>(
           eglGetProcAddress("glEGLImageTargetTexture2DOES"));
+  procs.egl_image_available = procs.glEGLImageTargetTexture2DOES != nullptr;
   procs.valid = procs.glGenTextures && procs.glDeleteTextures &&
                 procs.glBindTexture && procs.glTexParameteri &&
-                procs.glTexImage2D && procs.glEGLImageTargetTexture2DOES;
+                procs.glTexImage2D;
 }
 
 };  // namespace flutter

@@ -511,6 +511,42 @@ int32_t FlutterELinuxView::GetFrameRate() {
   return binding_handler_->GetFrameRate();
 }
 
+void* FlutterELinuxView::GetWaylandDisplay() const {
+  return binding_handler_ ? binding_handler_->GetWaylandDisplay() : nullptr;
+}
+
+void* FlutterELinuxView::GetEGLDisplay() const {
+  auto* target = GetRenderSurfaceTarget();
+  if (!target) {
+    return nullptr;
+  }
+  return reinterpret_cast<void*>(target->GetEGLDisplay());
+}
+
+void* FlutterELinuxView::GetEGLContext() const {
+  auto* target = GetRenderSurfaceTarget();
+  if (!target) {
+    return nullptr;
+  }
+  return reinterpret_cast<void*>(target->GetEGLContext());
+}
+
+void* FlutterELinuxView::GetEGLResourceContext() const {
+  auto* target = GetRenderSurfaceTarget();
+  if (!target) {
+    return nullptr;
+  }
+  return reinterpret_cast<void*>(target->GetEGLResourceContext());
+}
+
+int32_t FlutterELinuxView::GetEGLConfigId() const {
+  auto* target = GetRenderSurfaceTarget();
+  if (!target) {
+    return 0;
+  }
+  return static_cast<int32_t>(target->GetEGLConfigId());
+}
+
 FlutterTransformation FlutterELinuxView::GetRootSurfaceTransformation() {
   auto degree = binding_handler_->GetRotationDegree();
   if (view_rotation_degree_ != degree) {

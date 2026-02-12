@@ -79,6 +79,9 @@ class ELinuxWindowWayland : public ELinuxWindow, public WindowBindingHandler {
   int32_t GetFrameRate() override;
 
   // |FlutterWindowBindingHandler|
+  void* GetWaylandDisplay() const override;
+
+  // |FlutterWindowBindingHandler|
   void UpdateFlutterCursor(const std::string& cursor_name) override;
 
   // |FlutterWindowBindingHandler|

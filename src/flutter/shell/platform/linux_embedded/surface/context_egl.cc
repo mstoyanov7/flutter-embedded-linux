@@ -4,6 +4,8 @@
 
 #include "flutter/shell/platform/linux_embedded/surface/context_egl.h"
 
+#include <EGL/eglext.h>
+
 #include "flutter/shell/platform/linux_embedded/logger.h"
 #include "flutter/shell/platform/linux_embedded/surface/egl_utils.h"
 
@@ -17,7 +19,15 @@ ContextEgl::ContextEgl(std::unique_ptr<EnvironmentEgl> environment,
   const EGLint attribs[] = {
       // clang-format off
     EGL_SURFACE_TYPE,    egl_surface_type,
+#ifdef USE_GLES3
+#ifdef EGL_OPENGL_ES3_BIT
+    EGL_RENDERABLE_TYPE, EGL_OPENGL_ES3_BIT,
+#else
+    EGL_RENDERABLE_TYPE, EGL_OPENGL_ES3_BIT_KHR,
+#endif
+#else
     EGL_RENDERABLE_TYPE, EGL_OPENGL_ES2_BIT,
+#endif
     EGL_RED_SIZE,        8,
     EGL_GREEN_SIZE,      8,
     EGL_BLUE_SIZE,       8,
@@ -31,6 +41,15 @@ ContextEgl::ContextEgl(std::unique_ptr<EnvironmentEgl> environment,
   };
   const EGLint impeller_config_attributes[] = {
       // clang-format off
+#ifdef USE_GLES3
+#ifdef EGL_OPENGL_ES3_BIT
+    EGL_RENDERABLE_TYPE, EGL_OPENGL_ES3_BIT,
+#else
+    EGL_RENDERABLE_TYPE, EGL_OPENGL_ES3_BIT_KHR,
+#endif
+#else
+    EGL_RENDERABLE_TYPE, EGL_OPENGL_ES2_BIT,
+#endif
     EGL_RED_SIZE,        8,
     EGL_GREEN_SIZE,      8,
     EGL_BLUE_SIZE,       8,
@@ -46,6 +65,15 @@ ContextEgl::ContextEgl(std::unique_ptr<EnvironmentEgl> environment,
   };
   const EGLint impeller_config_attributes_no_msaa[] = {
       // clang-format off
+#ifdef USE_GLES3
+#ifdef EGL_OPENGL_ES3_BIT
+    EGL_RENDERABLE_TYPE, EGL_OPENGL_ES3_BIT,
+#else
+    EGL_RENDERABLE_TYPE, EGL_OPENGL_ES3_BIT_KHR,
+#endif
+#else
+    EGL_RENDERABLE_TYPE, EGL_OPENGL_ES2_BIT,
+#endif
     EGL_RED_SIZE,        8,
     EGL_GREEN_SIZE,      8,
     EGL_BLUE_SIZE,       8,
@@ -88,7 +116,14 @@ ContextEgl::ContextEgl(std::unique_ptr<EnvironmentEgl> environment,
   }
 
   {
-    const EGLint attribs[] = {EGL_CONTEXT_CLIENT_VERSION, 2, EGL_NONE};
+    const EGLint attribs[] = {
+#ifdef USE_GLES3
+      EGL_CONTEXT_CLIENT_VERSION, 3,
+#else
+      EGL_CONTEXT_CLIENT_VERSION, 2,
+#endif
+      EGL_NONE
+    };
     context_ = eglCreateContext(environment_->Display(), config_,
                                 EGL_NO_CONTEXT, attribs);
     if (context_ == EGL_NO_CONTEXT) {
@@ -184,6 +219,34 @@ void* ContextEgl::GlProcResolver(const char* name) const {
 EGLint ContextEgl::GetAttrib(EGLint attribute) {
   EGLint value;
   eglGetConfigAttrib(environment_->Display(), config_, attribute, &value);
+  return value;
+}
+
+EGLDisplay ContextEgl::GetDisplay() const {
+  return environment_ ? environment_->Display() : EGL_NO_DISPLAY;
+}
+
+EGLContext ContextEgl::GetContext() const {
+  return context_;
+}
+
+EGLContext ContextEgl::GetResourceContext() const {
+  return resource_context_;
+}
+
+EGLConfig ContextEgl::GetConfig() const {
+  return config_;
+}
+
+EGLint ContextEgl::GetConfigId() const {
+  if (!environment_ || !config_) {
+    return 0;
+  }
+  EGLint value = 0;
+  if (eglGetConfigAttrib(environment_->Display(), config_, EGL_CONFIG_ID,
+                         &value) != EGL_TRUE) {
+    return 0;
+  }
   return value;
 }
 

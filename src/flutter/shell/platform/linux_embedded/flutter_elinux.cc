@@ -134,6 +134,26 @@ int32_t FlutterDesktopViewGetFrameRate(FlutterDesktopViewRef view) {
   return ViewFromHandle(view)->GetFrameRate();
 }
 
+void* FlutterDesktopViewGetWaylandDisplay(FlutterDesktopViewRef view) {
+  return ViewFromHandle(view)->GetWaylandDisplay();
+}
+
+void* FlutterDesktopViewGetEGLDisplay(FlutterDesktopViewRef view) {
+  return ViewFromHandle(view)->GetEGLDisplay();
+}
+
+void* FlutterDesktopViewGetEGLContext(FlutterDesktopViewRef view) {
+  return ViewFromHandle(view)->GetEGLContext();
+}
+
+void* FlutterDesktopViewGetEGLResourceContext(FlutterDesktopViewRef view) {
+  return ViewFromHandle(view)->GetEGLResourceContext();
+}
+
+int32_t FlutterDesktopViewGetEGLConfigId(FlutterDesktopViewRef view) {
+  return ViewFromHandle(view)->GetEGLConfigId();
+}
+
 FlutterDesktopEngineRef FlutterDesktopEngineCreate(
     const FlutterDesktopEngineProperties* engine_properties) {
   flutter::FlutterProjectBundle project(*engine_properties);

@@ -9,6 +9,7 @@
 #include <stdint.h>
 
 #include "flutter_export.h"
+#include "flutter/shell/platform/embedder/embedder.h"
 
 #if defined(__cplusplus)
 extern "C" {
@@ -27,7 +28,9 @@ typedef enum {
   // A platform-specific GPU surface-backed texture.
   kFlutterDesktopGpuSurfaceTexture,
   // An EGLImage-based texture
-  kFlutterDesktopEGLImageTexture
+  kFlutterDesktopEGLImageTexture,
+  // A GL texture-based external texture.
+  kFlutterDesktopOpenGLTexture
 } FlutterDesktopTextureType;
 
 // Supported GPU surface types.
@@ -150,6 +153,11 @@ typedef const FlutterDesktopEGLImage* (*FlutterDesktopEGLImageTextureCallback)(
     void* egl_context,
     void* user_data);
 
+typedef const FlutterOpenGLTexture* (
+    *FlutterDesktopOpenGLTextureCallback)(size_t width,
+                                          size_t height,
+                                          void* user_data);
+
 // An object used to configure pixel buffer textures.
 typedef struct {
   // The callback used by the engine to copy the pixel buffer object.
@@ -181,11 +189,19 @@ typedef struct {
 } FlutterDesktopEGLImageTextureConfig;
 
 typedef struct {
+  // The callback used by the engine to get the OpenGL texture.
+  FlutterDesktopOpenGLTextureCallback callback;
+  // Opaque data that will get passed to the provided |callback|.
+  void* user_data;
+} FlutterDesktopOpenGLTextureConfig;
+
+typedef struct {
   FlutterDesktopTextureType type;
   union {
     FlutterDesktopPixelBufferTextureConfig pixel_buffer_config;
     FlutterDesktopGpuSurfaceTextureConfig gpu_surface_config;
     FlutterDesktopEGLImageTextureConfig egl_image_config;
+    FlutterDesktopOpenGLTextureConfig opengl_config;
   };
 } FlutterDesktopTextureInfo;
 

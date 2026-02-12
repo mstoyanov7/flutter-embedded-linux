@@ -6,6 +6,7 @@
 
 #include <rapidjson/document.h>
 
+#include <cstdlib>
 #include <iostream>
 #include <sstream>
 
@@ -221,9 +222,20 @@ bool FlutterELinuxEngine::RunWithEntrypoint(const char* entrypoint) {
     static_cast<TaskRunner*>(user_data)->PostFlutterTask(task,
                                                          target_time_nanos);
   };
+  platform_task_runner.identifier =
+      reinterpret_cast<size_t>(task_runner_.get());
   FlutterCustomTaskRunners custom_task_runners = {};
   custom_task_runners.struct_size = sizeof(FlutterCustomTaskRunners);
   custom_task_runners.platform_task_runner = &platform_task_runner;
+
+  FlutterTaskRunnerDescription render_task_runner = {};
+  const bool single_threaded =
+      std::getenv("FLUTTER_ELINUX_SINGLE_THREAD") != nullptr ||
+      std::getenv("GODOT_SINGLE_THREAD") != nullptr;
+  if (single_threaded) {
+    render_task_runner = platform_task_runner;
+    custom_task_runners.render_task_runner = &render_task_runner;
+  }
 
   FlutterProjectArgs args = {};
   args.struct_size = sizeof(FlutterProjectArgs);

@@ -77,6 +77,9 @@ class WindowBindingHandler {
 
   // Sets the clipboard data.
   virtual void SetClipboardData(const std::string& data) = 0;
+
+  // Returns the Wayland display pointer for Wayland backends.
+  virtual void* GetWaylandDisplay() const { return nullptr; }
 };
 
 }  // namespace flutter

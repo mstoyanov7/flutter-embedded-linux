@@ -71,6 +71,17 @@ class FlutterELinuxView : public WindowBindingHandlerDelegate {
   // Returns the frame rate of the display.
   int32_t GetFrameRate();
 
+  // Returns the Wayland display pointer if using Wayland.
+  void* GetWaylandDisplay() const;
+  // Returns the EGLDisplay associated with this view.
+  void* GetEGLDisplay() const;
+  // Returns the onscreen EGLContext.
+  void* GetEGLContext() const;
+  // Returns the resource/offscreen EGLContext.
+  void* GetEGLResourceContext() const;
+  // Returns the EGLConfig ID in use.
+  int32_t GetEGLConfigId() const;
+
   // Callbacks for clearing context, settings context and swapping buffers.
   void* ProcResolver(const char* name);
   bool MakeCurrent();

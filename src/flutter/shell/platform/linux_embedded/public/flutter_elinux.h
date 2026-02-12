@@ -165,6 +165,21 @@ FLUTTER_EXPORT bool FlutterDesktopViewDispatchEvent(FlutterDesktopViewRef view);
 FLUTTER_EXPORT int32_t
 FlutterDesktopViewGetFrameRate(FlutterDesktopViewRef view);
 
+FLUTTER_EXPORT void*
+FlutterDesktopViewGetWaylandDisplay(FlutterDesktopViewRef view);
+
+FLUTTER_EXPORT void*
+FlutterDesktopViewGetEGLDisplay(FlutterDesktopViewRef view);
+
+FLUTTER_EXPORT void*
+FlutterDesktopViewGetEGLContext(FlutterDesktopViewRef view);
+
+FLUTTER_EXPORT void*
+FlutterDesktopViewGetEGLResourceContext(FlutterDesktopViewRef view);
+
+FLUTTER_EXPORT int32_t
+FlutterDesktopViewGetEGLConfigId(FlutterDesktopViewRef view);
+
 // ========== Engine ==========
 
 // Creates a Flutter engine with the given properties.
